@@ -76,7 +76,7 @@ def parse_arguments() -> Namespace:
             directories[i] = Path(Path.cwd(), directory)
 
     if len(directories) == 0:
-        directories.append(Path.cwd)
+        directories.append(Path.cwd())
 
     for i in range(len(extensions)):
         if extensions[i][:1] != ".":
