@@ -8,7 +8,7 @@ def main():
     for directory in args.directories:
         if directory.is_dir():
             print("Working on:" + str(directory))
-            clean_directory(directory, args.extensions, args.unw_extensions, args.trash, args.dry_run)
+            clean_directory(directory, args.extensions, args.unw_extensions, args.trash, args.dry_run, args.ignore_errors)
         else:
             print('Unable to find directory: ' + str(directory) + '". Skipping')
 
@@ -40,7 +40,11 @@ def parse_arguments() -> Namespace:
                              "to a video file.")
 
     parser.add_argument("--dry-run", "-n", action="store_true", dest="dry_run",
-                        help="Dry-run flag, Run program without altering any files or directories.")
+                        help="Dry-run flag: Run program without altering any files or directories.")
+
+    parser.add_argument("--ignore-errors", "-i", action="store_true", dest="ignore_errors",
+                        help="Ignore errors flag: If script encounters an issue with creating, deleting or "
+                             "moving files the script will continue to run.")
 
     args: Namespace = parser.parse_args()
 
@@ -105,7 +109,7 @@ def parse_arguments() -> Namespace:
     return args
 
 
-def clean_directory(directory, allowed_companions, unw_extensions, trash, dry_run):
+def clean_directory(directory, allowed_companions, unw_extensions, trash, dry_run, ignore_errors):
     cleaning_exts = [".srt", ".ass", ".ssa", ".sub", ".idx", ".vtt", ".info", ".nfo", ".pgs"] + unw_extensions
     video_exts = [".mkv", ".mp4", ".avi", ".wmv"]
 
@@ -137,14 +141,14 @@ def clean_directory(directory, allowed_companions, unw_extensions, trash, dry_ru
                         break
         if delete:
             if not dry_run:
-                delete_file(file, trash)
+                delete_file(file, trash, ignore_errors)
             else:
                 print("\tMoved/Removed file (dry-run): \"" + file.name + "\"")
 
     return
 
 
-def delete_file(file: Path, trash: Path):
+def delete_file(file: Path, trash: Path, ignore_errors):
     if trash is None:
         file.unlink(missing_ok=True)
         print("\tRemoved file: \"" + file.name + "\"")
@@ -152,15 +156,19 @@ def delete_file(file: Path, trash: Path):
 
     if not trash.is_absolute():
         target_trash = Path(file.parent, trash)
-        "\tLocal trash: \"" + str(trash) + "\""
+        "\tLocal trash: \"" + str(target_trash) + "\""
         try:
             target_trash.mkdir(exist_ok=True)
         except FileExistsError:
-            print("\tUnable to create trash directory, skipping - File exists: \"" + str(trash) + "\"")
-            return
+            print("\tUnable to create trash directory - File exists: \"" + str(trash) + "\"")
+            if ignore_errors:
+                return
+            exit()
         except FileNotFoundError:
-            print("\tUnable to create trash directory, skipping - Directory doesn't exist: \"" + str(trash.parent) + "\"")
-            return
+            print("\tUnable to create trash directory - Directory doesn't exist: \"" + str(trash.parent) + "\"")
+            if ignore_errors:
+                return
+            exit()
     else:
         target_trash = trash
 
@@ -183,3 +191,6 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         print("Exiting - Interrupted")
         exit()
+    except PermissionError as e:
+        print("Exiting - Permission denied: \"" + e.filename + "\"")
+
