@@ -106,7 +106,7 @@ def parse_arguments() -> Namespace:
 
 def clean_directory(directory, allowed_companions, unw_extensions, trash, dry_run):
     cleaning_exts = [".srt", ".ass", ".ssa", ".sub", ".idx", ".vtt", ".info", ".nfo", ".pgs"] + unw_extensions
-    video_exts = [".mkv", ".mp4"]
+    video_exts = [".mkv", ".mp4", ".avi"]
 
     video_files = list()
     for file in directory.iterdir():
