@@ -7,10 +7,10 @@ def main():
     args = parse_arguments()
     for directory in args.directories:
         if directory.is_dir():
-            print("Working on:\t" + str(directory))
+            print("Working on:" + str(directory))
             clean_directory(directory, args.extensions, args.unw_extensions, args.trash, args.dry_run)
         else:
-            print('Unable to find directory: \t' + str(directory) + '". Skipping')
+            print('Unable to find directory: ' + str(directory) + '". Skipping')
 
 
 def parse_arguments() -> Namespace:
