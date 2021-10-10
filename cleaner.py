@@ -177,4 +177,8 @@ def delete_file(file: Path, trash: Path):
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("Exiting - Interrupted")
+        exit()
