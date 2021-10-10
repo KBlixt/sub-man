@@ -52,6 +52,12 @@ def parse_arguments() -> Namespace:
     unw_extensions: list = args.unw_extensions
     trash: Path = args.trash
 
+    final_ext = list()
+    for lis in extensions:
+        for ext in lis:
+            final_ext.append(ext)
+    extensions = final_ext
+
     for i in range(len(libraries)):
         if not Path.is_absolute(libraries[i]):
             libraries[i] = Path(Path.cwd(), libraries[i])
@@ -147,7 +153,7 @@ def delete_file(file: Path, trash: Path):
         target_trash = Path(file.parent, trash)
         "\tLocal trash: \"" + str(trash) + "\""
         try:
-            trash.mkdir(exist_ok=True)
+            target_trash.mkdir(exist_ok=True)
         except FileExistsError:
             print("\tUnable to create trash directory, skipping - File exists: \"" + str(trash) + "\"")
             return
