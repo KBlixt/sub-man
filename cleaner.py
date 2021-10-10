@@ -193,4 +193,4 @@ if __name__ == '__main__':
         exit()
     except PermissionError as e:
         print("Exiting - Permission denied: \"" + e.filename + "\"")
-
+        exit()
