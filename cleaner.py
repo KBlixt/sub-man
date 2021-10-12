@@ -150,7 +150,10 @@ def clean_directory(directory, allowed_companions, unw_extensions, trash, dry_ru
 
 def delete_file(file: Path, trash: Path, ignore_errors):
     if trash is None:
-        file.unlink(missing_ok=True)
+        try:
+            file.unlink()
+        except FileNotFoundError:
+            pass
         print("\tRemoved file: \"" + file.name + "\"")
         return
 
