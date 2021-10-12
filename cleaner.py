@@ -135,7 +135,7 @@ def clean_directory(directory, allowed_companions, unw_extensions, trash, dry_ru
             delete = True
             for video_file in video_files:
                 video_file: str
-                if file_name[:len(video_file) + 1] == video_file + ".":
+                if file_name[:len(video_file)] == video_file:
                     if any(file.name[-len(ext):] == ext for ext in allowed_companions):
                         delete = False
                         break
